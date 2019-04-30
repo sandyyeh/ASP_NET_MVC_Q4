@@ -1,0 +1,99 @@
+﻿@model ASP_NET_MVC_Q4.ViewModel.SelectListViewModel
+@{
+    ViewBag.Title = "Home Page";
+}
+@Scripts.Render("~/bundles/jqueryajax")
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>title</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<h2></h2>
+<body>
+    <form action="@Url.Action("Index")" method="post">
+       
+        @Html.DropDownList("Department", new SelectList(Model.FirstselectListItem, "Value", "Text"), "請選擇")
+        @*@Html.DropDownListFor(model => model.SecondSelectListItem, new SelectList(Model.SecondSelectListItem, "Value", "Text"), "請選擇")*@
+        <select id="Group" name="Group"><option>------</option></select>
+        &nbsp; <input id="send" type="button"  value="送出">
+        <div id="text"></div>
+    </form>
+</body>
+
+</html>
+
+
+
+
+
+<script type="text/javascript" language="javascript">
+
+    $(document).ready(function () {
+        $('#Department').change(function () { ChangeDepartment(); });
+    });
+
+    function ChangeDepartment() {
+        var selectedValue = $('#Department option:selected').val();
+        if ($.trim(selectedValue).length > 0) {
+            GetGroup(selectedValue);
+        }
+    }
+
+    function GetGroup(id) {
+        $.ajax({
+            url: '/Home/GetDepartment',
+            data: { id:id },
+            type: 'post',
+            cache: false,
+            async: false,
+            dataType: 'json',
+            success: function (data) {
+                if (data.length > 0) {
+                    $('#Group').empty();
+                    $('#Group').append($('<option></option>').val('').text('請選擇'));
+                    $.each(data, function (i, item) {
+                        //$("#Orders").append('<option Value"' + item.val + '">' + item.Text + '</option>')
+
+                        $('#Group').append($('<option></option>').val(item.Key).text(item.Value));
+                    });
+                }
+            }
+        });
+    }
+
+
+    $(function () {
+        $('#send').on('click', function () {
+            var Status = $(this).val();
+            var a = $("#Department option:selected").text()
+            var b = $("#Group option:selected").text()
+            $('#text').text(a+ " / "+ b)
+            //$.ajax({
+            //    url: '/Home/Index',
+            //    data:
+            //    {
+            //        department: a,
+            //        group: b
+            //    },
+            //    type: 'post',
+            //    cache: false,
+            //    async: false,
+            //    dataType: 'json',
+            //    success: function (data) {
+            //        if (data.length > 0) {
+              
+            //            $('#Department').append(val(item.Key).text(item.Value));
+            //                $('#Group').append(val(item.Key).text(item.Value));
+                 
+            //        }
+            //    }
+            //});
+        });
+    });
+
+    
+
+    
+</script>
